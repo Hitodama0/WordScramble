@@ -14,10 +14,11 @@ struct ContentView: View {
     @State private var errorTitle = ""
     @State private var errorMessage = ""
     @State private var showingError = false
-    
+    @State private var score = 0
     var body: some View {
         NavigationView {
             List {
+                Text("Score: \(score)")
                 Section {
                     TextField("Enter your word", text: $newWord)
                         .autocapitalization(.none)
@@ -31,6 +32,9 @@ struct ContentView: View {
                         }
                     }
                 }
+            }
+            .toolbar {
+                Button("Start Game", action: startGame)
             }
             .navigationTitle(rootWord)
             .onSubmit(addNewWord)
@@ -47,6 +51,7 @@ struct ContentView: View {
         // lowercase and trim the word, to make sure we don't add duplicate words with case differences
         let answer = newWord.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
         // exit if the remaining string is empty
+        if answer.count < 3 || answer == rootWord {return}
         guard answer.count > 0 else { return }
         
         guard isOriginal(word: answer) else {
@@ -67,7 +72,7 @@ struct ContentView: View {
         withAnimation {
             usedWords.insert(answer, at: 0)
         }
-        
+        score += newWord.count
         newWord = ""
     }
     
